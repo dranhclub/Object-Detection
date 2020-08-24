@@ -12,12 +12,12 @@ def resizeImg(img, scale_percent):
     return cv.resize(img, dim, interpolation=cv.INTER_AREA)
 
 print('Reading image...')
-img1 = cv.imread('theguixe.jpg',cv.IMREAD_GRAYSCALE)     # queryImage
-img2 = cv.imread('caiban.jpg',cv.IMREAD_GRAYSCALE)       # trainImage
+img1 = cv.imread('img/theguixe.jpg', cv.IMREAD_GRAYSCALE)     # queryImage
+img2 = cv.imread('img/caiban.jpg', cv.IMREAD_GRAYSCALE)       # trainImage
 
 # resize 30%
-img1 = resizeImg(img1, 30)
-img2 = resizeImg(img2, 30)
+img1 = resizeImg(img1, 20)
+img2 = resizeImg(img2, 20)
 
 # Initiate SIFT detector
 sift = cv.SIFT_create()
@@ -62,4 +62,3 @@ print('Done')
 # cv.drawMatchesKnn expects list of lists as matches.
 img3 = cv.drawMatchesKnn(img1,kp1,img2,kp2,good,None,flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 plt.imshow(img3),plt.show()
-
