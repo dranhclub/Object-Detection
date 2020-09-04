@@ -6,8 +6,8 @@ def addImg(img1, img2):
     i1 = img1.astype('float')
     i2 = img2.astype('float')
 
-    img3 = np.add(i1, i2)
-    img3[img3 > 255] = 255
+    img3 = np.subtract(i1, i2)
+    img3[img3 < 255] = 255
     return img3.astype('uint8')
 
 img1 = cv.imread("img/img1.jpg")

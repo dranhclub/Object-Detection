@@ -3,20 +3,17 @@ import cv2 as cv
 import time
 import math
 import matplotlib.pyplot as plt
+from resize_img import resizeImg
 
-def resizeImg(img, scale_percent):
-    width = int(img.shape[1] * scale_percent / 100)
-    height = int(img.shape[0] * scale_percent / 100)
-    dim = (width, height)
-    return cv.resize(img, dim, interpolation=cv.INTER_AREA)
 
 print('Reading image...')
-img1 = cv.imread('img/theguixe.jpg', cv.IMREAD_GRAYSCALE)     # queryImage
-img2 = cv.imread('img/caiban.jpg', cv.IMREAD_GRAYSCALE)       # trainImage
+img1 = cv.imread('img/object0.jpg', cv.IMREAD_GRAYSCALE)     # queryImage
+img2 = cv.imread('img/scene0.jpg', cv.IMREAD_GRAYSCALE)       # trainImage
 
 # resize 20%
-img1 = resizeImg(img1, 15)
-img2 = resizeImg(img2, 15)
+img1 = resizeImg(img1, 20)
+img2 = resizeImg(img2, 20)
+
 
 # Initiate SIFT detector
 sift = cv.SIFT_create()
