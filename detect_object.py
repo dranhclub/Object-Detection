@@ -2,7 +2,7 @@ import numpy as np
 import cv2 as cv
 from matplotlib import pyplot as plt
 MIN_MATCH_COUNT = 10
-img1 = cv.imread('img/object0.jpg', 0)          # queryImage
+img1 = cv.imread('img/object1.jpg', 0)          # queryImage
 img2 = cv.imread('img/scene0.jpg', 0) # trainImage
 # Initiate SIFT detector
 sift = cv.SIFT_create()
