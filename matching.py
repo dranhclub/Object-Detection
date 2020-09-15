@@ -26,25 +26,27 @@ t = time.time()
 bf = cv.BFMatcher()
 matches = []
 
-for i in range(0, len(des1)):
-    minDistSq1 = minDistSq2 = 99999999
-    minIdx1 = minIdx2 = -1
-    for j in range(0, len(des2)):
-        diffVec = des2[j] - des1[i]
-        distSq = np.sum(np.square(diffVec))
-        if distSq < minDistSq1:
-            minDistSq2 = minDistSq1
-            minDistSq1 = distSq
-            minIdx2 = minIdx1
-            minIdx1 = j
-        elif distSq < minDistSq2:
-            minDistSq2 = distSq
-            minIdx2 = j
+matches = bf.knnMatch(des1, des2, 2)
 
-    matches.append([
-        cv.DMatch(i, minIdx1, 0, math.sqrt(minDistSq1)),
-        cv.DMatch(i, minIdx2, 0, math.sqrt(minDistSq2))
-    ])
+# for i in range(0, len(des1)):
+#     minDistSq1 = minDistSq2 = 99999999
+#     minIdx1 = minIdx2 = -1
+#     for j in range(0, len(des2)):
+#         diffVec = des2[j] - des1[i]
+#         distSq = np.sum(np.square(diffVec))
+#         if distSq < minDistSq1:
+#             minDistSq2 = minDistSq1
+#             minDistSq1 = distSq
+#             minIdx2 = minIdx1
+#             minIdx1 = j
+#         elif distSq < minDistSq2:
+#             minDistSq2 = distSq
+#             minIdx2 = j
+#
+#     matches.append([
+#         cv.DMatch(i, minIdx1, 0, math.sqrt(minDistSq1)),
+#         cv.DMatch(i, minIdx2, 0, math.sqrt(minDistSq2))
+#     ])
 
 good = []
 for m,n in matches:

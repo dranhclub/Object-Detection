@@ -1,14 +1,17 @@
-import numpy as np
-from sklearn.cluster import MeanShift, estimate_bandwidth
 import cv2 as cv
-import math
+from sklearn.cluster import MeanShift, estimate_bandwidth
 import matplotlib.pyplot as plt
+import numpy as np
+import math
 from resize_img import resizeImg
 import random
 
 print('Reading image...')
-img1 = cv.imread('img/object1.jpg', cv.IMREAD_GRAYSCALE)  # queryImage
-img2 = cv.imread('img/scene1.jpg', cv.IMREAD_GRAYSCALE)  # trainImage
+# img1 = cv.imread('img/object1.jpg', cv.IMREAD_GRAYSCALE)  # queryImage
+# img2 = cv.imread('img/scene1.jpg', cv.IMREAD_GRAYSCALE)  # trainImage
+
+img1 = cv.imread('img/object4.jpg')  # queryImage
+img2 = cv.imread('img/scene3.jpg')  # trainImage
 
 # resize 20%
 img1 = resizeImg(img1, 20)
@@ -18,14 +21,15 @@ sift = cv.SIFT_create()
 kp1, des1 = sift.detectAndCompute(img1, None)
 kp2, des2 = sift.detectAndCompute(img2, None)
 
-scene_points = np.float32([kp.pt for kp in kp2])
 
 # #############################################################################
 # Compute clustering with MeanShift
 
+scene_points = np.float32([kp.pt for kp in kp2])
 bandwidth = estimate_bandwidth(scene_points, quantile=0.2)
 ms = MeanShift(bandwidth=bandwidth, bin_seeding=True)
 ms.fit(scene_points)
+
 
 labels = ms.labels_
 cluster_centers = ms.cluster_centers_
@@ -34,6 +38,8 @@ n_clusters_ = len(labels_unique)
 
 print("number of estimated clusters : %d" % n_clusters_)
 
+# #############################################################################
+# Draw keypoints with different colors for each cluster
 for k in range(n_clusters_):
     mask_of_cluster_k = labels == k
     cluster_center = cluster_centers[k]
@@ -43,10 +49,10 @@ for k in range(n_clusters_):
         cv.circle(img2, (x, y), 5, color)
 
 # #############################################################################
-# Matching features and locate object
+# Matching features and locating object
 bf = cv.BFMatcher()
-img3 = np.array(img2, copy=True)
-MIN_MATCH_COUNT = 100
+outImg = np.array(img2, copy=True)
+MIN_MATCH_COUNT = 50
 instance_count = 0
 for k in range(n_clusters_):
     print("processing cluster %d ..." % k)
@@ -82,10 +88,8 @@ for k in range(n_clusters_):
         if m.distance < 0.7 * n.distance:
             good.append(m)
 
-    draw_params = dict(matchColor=(0, 255, 0),  # draw matches in green color
-                       singlePointColor=None,
-                       matchesMask=None,  # draw only inliers
-                       flags=2)
+    # draw matches
+    draw_params = dict(matchColor=(0, 255, 0), singlePointColor=None, matchesMask=None, flags=2)
     imgK = cv.drawMatches(img1, kp1, img2, kp2, good, None, **draw_params)
     fileName = "img/out/img" + str(k) + ".jpg"
     cv.imwrite(fileName, imgK)
@@ -97,10 +101,10 @@ for k in range(n_clusters_):
         dst_pts = np.float32([kp2[m.trainIdx].pt for m in good])
         M, mask = cv.findHomography(src_pts, dst_pts, cv.RANSAC, 5.0)
         matchesMask = mask.ravel().tolist()
-        h, w = img1.shape
+        h, w, d = img1.shape
         pts = np.float32([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]).reshape(-1, 1, 2)
         dst = cv.perspectiveTransform(pts, M)
-        img3 = cv.polylines(img3, [np.int32(dst)], True, 255, 3, cv.LINE_AA)
+        outImg = cv.polylines(outImg, [np.int32(dst)], True, 255, 3, cv.LINE_AA)
         instance_count += 1
         print("found instance in cluster ", k)
     else:
@@ -108,8 +112,8 @@ for k in range(n_clusters_):
         matchesMask = None
 
 print("number of instances: ", instance_count)
-plt.imshow(img3, 'gray'), plt.show()
+plt.imshow(outImg, 'gray'), plt.show()
 
 if instance_count > 0:
-    cv.imwrite("img/out/img.jpg", img3)
+    cv.imwrite("img/out/img.jpg", outImg)
     print("detecting output: img/out/img.jpg")

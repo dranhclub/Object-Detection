@@ -56,4 +56,4 @@ draw_params = dict(matchColor = (0,255,0), # draw matches in green color
                    flags = 2)
 img3 = cv.drawMatches(img1,kp1,img2,kp2,good,None,**draw_params)
 img4 = cv.drawKeypoints(img2, kp2, None)
-plt.imshow(img4, 'gray'),plt.show()
+plt.imshow(img3, 'gray'),plt.show()

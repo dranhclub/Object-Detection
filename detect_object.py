@@ -39,3 +39,8 @@ draw_params = dict(matchColor = (0,255,0), # draw matches in green color
                    flags = 2)
 img3 = cv.drawMatches(img1,kp1,img2,kp2,good,None,**draw_params)
 plt.imshow(img3, 'gray'),plt.show()
+
+
+# BFMatcher with default params
+bf = cv.BFMatcher()
+matches = bf.knnMatch(des1,des2,k=2)
